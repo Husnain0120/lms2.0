@@ -103,7 +103,10 @@ const Navbar = () => {
       </div>
       {/*Mobile devices */}
       <div className=" flex md:hidden items-center justify-between px-4 h-full">
-        <h1 className=" font-extrabold text-2xl">E-learning</h1>
+        <Link to={"/"}>
+          <h1 className=" font-extrabold text-2xl">E-learning</h1>
+        </Link>
+
         <MobileNavbar user={user} logoutHandler={logoutHandler} />
       </div>
     </div>
