@@ -44,7 +44,10 @@ export const MobileNavbar = ({ user, logoutHandler }) => {
         <SheetHeader
           className={"flex flex-row items-center justify-between mt-2"}
         >
-          <SheetTitle>E-Learning</SheetTitle>
+          <Link to="/">
+            <SheetTitle>E-Learning</SheetTitle>
+          </Link>
+
           <DarkMode />
         </SheetHeader>
         <DropdownMenuSeparator className="mr-2" />
