@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -44,6 +44,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Trash2, Save, X, UploadCloud, CheckCircle } from "lucide-react";
+import LanguageSwitcher from "./LanguageSwitcher";
+
+// Import translations
+import enTranslations from "../locales/en.json";
+import urTranslations from "../locales/ur.json";
 
 const categories = [
   "Ada",
@@ -115,6 +120,7 @@ const CourseTab = () => {
     courseThumbnail: "",
   });
   const [previewThumbnail, setPreviewThumbnail] = useState(null);
+  const [currentLanguage, setCurrentLanguage] = useState("en");
   const navigate = useNavigate();
   const { courseId } = useParams();
 
@@ -132,7 +138,10 @@ const CourseTab = () => {
   } = useGetCourseByIdQuery(courseId, { refetchOnMountOrArgChange: true });
 
   const isFormValid =
-    input.courseTitle && input.courseLevel && input.coursePrice;
+    input.courseTitle &&
+    input.category &&
+    input.courseLevel &&
+    input.coursePrice;
 
   useEffect(() => {
     if (courseData?.course) {
@@ -171,7 +180,7 @@ const CourseTab = () => {
 
   const handleUpdateCourse = async () => {
     if (!isFormValid) {
-      toast.error("Please fill all required fields marked with *");
+      toast.error(t("pleaseFillAllRequiredFields"));
       return;
     }
 
@@ -182,29 +191,43 @@ const CourseTab = () => {
 
     try {
       await editCourses({ formData, courseId }).unwrap();
-      toast.success("Course updated successfully");
-      navigate("/admin/courses");
+      toast.success(t("courseUpdatedSuccessfully"));
+      // navigate("/admin/courses");
     } catch (err) {
-      toast.error(err.data?.message || "Failed to update course");
+      toast.error(err.data?.message || t("failedToUpdateCourse"));
     }
   };
 
   const handlePublishStatus = async (status) => {
     try {
       await publichCourse({ courseId, query: status }).unwrap();
-      toast.success("Course publish status updated successfully");
+      toast.success(t("coursePublishStatusUpdatedSuccessfully"));
     } catch (err) {
-      toast.error("Failed to update course publish status");
+      toast.error(t("failedToUpdateCoursePublishStatus"));
     }
   };
 
   const handleDisableCourse = async () => {
     try {
       await disableCourse(courseId).unwrap();
-      toast.success("Course status updated successfully");
+      toast.success(t("courseStatusUpdatedSuccessfully"));
     } catch (err) {
-      toast.error(err.data?.message || "Failed to update course status");
+      toast.error(err.data?.message || t("failedToUpdateCourseStatus"));
     }
+  };
+
+  const handleLanguageChange = useCallback((language) => {
+    setCurrentLanguage(language);
+  }, []);
+
+  useEffect(() => {
+    // Removed RTL logic here
+  }, []);
+
+  const t = (key) => {
+    const translations =
+      currentLanguage === "en" ? enTranslations : urTranslations;
+    return translations[key] || key;
   };
 
   return (
@@ -233,8 +256,8 @@ const CourseTab = () => {
               />
               <Label htmlFor="course-status">
                 {courseData?.course.isDisabled
-                  ? "Course is Disabled"
-                  : "Course is Active"}
+                  ? t("courseIsDisabled")
+                  : t("courseIsActive")}
               </Label>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -254,38 +277,41 @@ const CourseTab = () => {
                 {courseData?.course.isPublished ? (
                   <>
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Unpublish
+                    {t("unpublish")}
                   </>
                 ) : (
                   <>
                     <UploadCloud className="w-4 h-4 mr-2" />
-                    Publish
+                    {t("publish")}
                   </>
                 )}
               </Button>
+              <LanguageSwitcher
+                currentLanguage={currentLanguage}
+                onLanguageChange={handleLanguageChange}
+              />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive">
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Remove Course
+                    {t("removeCourse")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      the course and remove it from our servers.
+                      {t("removeCourseConfirmation")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
                         /* Add remove course logic here */
                       }}
                     >
-                      Remove
+                      {t("remove")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -293,12 +319,12 @@ const CourseTab = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-primary">
-            Craft Your Educational Masterpiece
+            {t("craftYourEducationalMasterpiece")}
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
-            Shape exceptional learning experiences. Required fields are marked
-            with <span className="text-red-500">*</span>. Ensure all details are
-            accurate before publishing.
+            {t("shapeExceptionalLearningExperiences")}
+            <span className="text-red-500">*</span>
+            {t("ensureAllDetailsAreAccurateBeforePublishing")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -312,40 +338,47 @@ const CourseTab = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="courseTitle">
-                  Course Title<span className="text-red-500">*</span>
+                  {t("courseTitle")}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="courseTitle"
                   name="courseTitle"
                   value={input.courseTitle}
                   onChange={handleInputChange}
-                  placeholder="Ex. Fullstack Web Development Masterclass"
-                  className={!input.courseTitle ? "border-red-500" : ""}
+                  placeholder={t("courseTitlePlaceholder")}
+                  className={`${!input.courseTitle ? "border-red-500" : ""}`}
+                  required
                 />
                 {!input.courseTitle && (
                   <p className="text-xs text-red-500 mt-1">
-                    A compelling title is required
+                    {t("compellingTitleRequired")}
                   </p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="subTitle">Subtitle</Label>
+                <Label htmlFor="subTitle">{t("subTitle")}</Label>
                 <Input
                   id="subTitle"
                   name="subTitle"
                   value={input.subTitle}
                   onChange={handleInputChange}
-                  placeholder="Ex. From Zero to Hero: Build Modern Web Applications"
+                  placeholder={t("subTitlePlaceholder")}
+                  className=""
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Course Description</Label>
-              <RichTextEditor input={input} setInput={setInput} />
+              <Label htmlFor="description">{t("courseDescription")}</Label>
+              <RichTextEditor
+                input={input}
+                setInput={setInput}
+                lang={currentLanguage}
+              />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">{t("category")}</Label>
                 <Select
                   onValueChange={(value) =>
                     handleSelectChange("category", value)
@@ -353,11 +386,11 @@ const CourseTab = () => {
                   value={input.category}
                 >
                   <SelectTrigger id="category">
-                    <SelectValue placeholder="Select a Category" />
+                    <SelectValue placeholder={t("selectCategory")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Course Categories</SelectLabel>
+                      <SelectLabel>{t("courseCategories")}</SelectLabel>
                       {categories.map((category, index) => (
                         <SelectItem key={index} value={category.toLowerCase()}>
                           {category}
@@ -369,7 +402,8 @@ const CourseTab = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="courseLevel">
-                  Skill Level<span className="text-red-500">*</span>
+                  {t("skillLevel")}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   onValueChange={(value) =>
@@ -381,32 +415,33 @@ const CourseTab = () => {
                     id="courseLevel"
                     className={!input.courseLevel ? "border-red-500" : ""}
                   >
-                    <SelectValue placeholder="Select Proficiency Level" />
+                    <SelectValue placeholder={t("selectProficiencyLevel")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Learning Journey</SelectLabel>
+                      <SelectLabel>{t("learningJourney")}</SelectLabel>
                       <SelectItem value="Beginner">
-                        Beginner Friendly
+                        {t("beginnerFriendly")}
                       </SelectItem>
                       <SelectItem value="Medium">
-                        Intermediate Mastery
+                        {t("intermediateMastery")}
                       </SelectItem>
                       <SelectItem value="Advance">
-                        Advanced Expertise
+                        {t("advancedExpertise")}
                       </SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
                 {!input.courseLevel && (
                   <p className="text-xs text-red-500 mt-1">
-                    Select appropriate difficulty level
+                    {t("selectAppropriateDifficultyLevel")}
                   </p>
                 )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="coursePrice">
-                  Course Price<span className="text-red-500">*</span>
+                  {t("coursePrice")}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1.5 mr-1 text-muted-foreground">
@@ -418,21 +453,24 @@ const CourseTab = () => {
                     type="number"
                     value={input.coursePrice}
                     onChange={handleInputChange}
-                    placeholder="Ex. 299"
+                    placeholder={t("coursePricePlaceholder")}
                     className={`pl-7 ${
                       !input.coursePrice ? "border-red-500" : ""
                     }`}
+                    required
+                    min="0"
+                    step="0.01"
                   />
                 </div>
                 {!input.coursePrice && (
                   <p className="text-xs text-red-500 mt-1">
-                    Set a fair price for your course
+                    {t("setFairPriceForYourCourse")}
                   </p>
                 )}
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="courseThumbnail">Course Thumbnail</Label>
+              <Label htmlFor="courseThumbnail">{t("courseThumbnail")}</Label>
               <Input
                 id="courseThumbnail"
                 type="file"
@@ -443,7 +481,7 @@ const CourseTab = () => {
                 <img
                   src={previewThumbnail || "/placeholder.svg"}
                   className="w-full max-w-md mt-2 rounded-md border"
-                  alt="Course Thumbnail Preview"
+                  alt={t("courseThumbnailPreview")}
                 />
               )}
             </div>
@@ -452,17 +490,13 @@ const CourseTab = () => {
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  if (
-                    window.confirm(
-                      "Are you sure you want to cancel editing the course?"
-                    )
-                  ) {
+                  if (window.confirm(t("discardChangesConfirmation"))) {
                     navigate(`/admin/courses`);
                   }
                 }}
               >
                 <X className="w-4 h-4 mr-2" />
-                Discard Changes
+                {t("discardChanges")}
               </Button>
               <Button
                 type="submit"
@@ -472,12 +506,12 @@ const CourseTab = () => {
                 {editLoading || courseLoading ? (
                   <>
                     <Loader className="mr-2" />
-                    Securing Changes...
+                    {t("securingChanges")}
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-2" />
-                    Commit Updates
+                    {t("commitUpdates")}
                   </>
                 )}
               </Button>
