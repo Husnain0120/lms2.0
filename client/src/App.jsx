@@ -123,46 +123,46 @@ const appRouter = createBrowserRouter([
           {
             path: "courses",
             element: (
-              <ProtectedRoute>
+              <AdminRoute>
                 {" "}
                 <CourseTable />
-              </ProtectedRoute>
+              </AdminRoute>
             ),
           },
           {
             path: "courses/create",
             element: (
-              <ProtectedRoute>
+              <AdminRoute>
                 {" "}
                 <AddCourse />
-              </ProtectedRoute>
+              </AdminRoute>
             ),
           },
           {
             path: "courses/edit/:courseId",
             element: (
-              <ProtectedRoute>
+              <AdminRoute>
                 {" "}
                 <EditCourse />
-              </ProtectedRoute>
+              </AdminRoute>
             ),
           },
           {
             path: "courses/edit/:courseId/lecture",
             element: (
-              <ProtectedRoute>
+              <AdminRoute>
                 {" "}
                 <CreateLecture />
-              </ProtectedRoute>
+              </AdminRoute>
             ),
           },
           {
             path: "courses/edit/:courseId/lecture/:lectureId",
             element: (
-              <ProtectedRoute>
+              <AdminRoute>
                 {" "}
                 <EditLecture />
-              </ProtectedRoute>
+              </AdminRoute>
             ),
           },
         ],
