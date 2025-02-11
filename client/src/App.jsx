@@ -21,6 +21,11 @@ import Ads from "./pages/admin/ads_manager/ads";
 import CourseDetail from "./pages/student/CourseDetail";
 import CourseProgress from "./pages/student/CourseProgress";
 import SearchPage from "./pages/student/SearchPage";
+import {
+  AdminRoute,
+  AuthenticatedUser,
+  ProtectedRoute,
+} from "./components/ProtectedRoute";
 
 const appRouter = createBrowserRouter([
   {
@@ -31,35 +36,66 @@ const appRouter = createBrowserRouter([
         path: "/",
         element: (
           <>
-            <HeroSection />
-            {/*courses */}
-            <Courses />
+            <ProtectedRoute>
+              <HeroSection />
+              {/*courses */}
+              <Courses />
+            </ProtectedRoute>
           </>
         ),
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <AuthenticatedUser>
+            {" "}
+            <Login />
+          </AuthenticatedUser>
+        ),
       },
       {
         path: "my-learning",
-        element: <MyLearning />,
+        element: (
+          <ProtectedRoute>
+            <MyLearning />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "my-profile",
-        element: <Profile />,
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "course/search",
-        element: <SearchPage />,
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <SearchPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "course-details/:courseId",
-        element: <CourseDetail />,
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <CourseDetail />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "course-progress/:courseId",
-        element: <CourseProgress />,
+        element: (
+          <ProtectedRoute>
+            {" "}
+            <CourseProgress />
+          </ProtectedRoute>
+        ),
       },
       // admin routes
       {
@@ -68,31 +104,66 @@ const appRouter = createBrowserRouter([
         children: [
           {
             path: "dashboard",
-            element: <Dashboard />,
+            element: (
+              <AdminRoute>
+                {" "}
+                <Dashboard />
+              </AdminRoute>
+            ),
           },
           {
             path: "ads/:userId",
-            element: <Ads />,
+            element: (
+              <AdminRoute>
+                {" "}
+                <Ads />
+              </AdminRoute>
+            ),
           },
           {
             path: "courses",
-            element: <CourseTable />,
+            element: (
+              <ProtectedRoute>
+                {" "}
+                <CourseTable />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "courses/create",
-            element: <AddCourse />,
+            element: (
+              <ProtectedRoute>
+                {" "}
+                <AddCourse />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "courses/edit/:courseId",
-            element: <EditCourse />,
+            element: (
+              <ProtectedRoute>
+                {" "}
+                <EditCourse />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "courses/edit/:courseId/lecture",
-            element: <CreateLecture />,
+            element: (
+              <ProtectedRoute>
+                {" "}
+                <CreateLecture />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "courses/edit/:courseId/lecture/:lectureId",
-            element: <EditLecture />,
+            element: (
+              <ProtectedRoute>
+                {" "}
+                <EditLecture />
+              </ProtectedRoute>
+            ),
           },
         ],
       },
