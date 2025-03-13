@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
 import VerifiedBadge from "@/components/instagram-verified-badge";
+import { Link } from "react-router-dom";
 
 const Course = ({ course, user }) => {
   const [disable] = useState(course.isDisabled); // Directly set state from prop

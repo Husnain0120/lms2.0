@@ -1,12 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
+import { RouterProvider } from "react-router";
 import "./App.css";
-import Navbar from "./components/Navbar";
+
 import { ThemeProvider } from "./components/theme-provider";
 
 import Login from "./pages/Login";
 import HeroSection from "./pages/student/HeroSection";
 import MainLayout from "./layout/MainLayout";
-import { RouterProvider } from "react-router";
+
 import Courses from "./pages/student/Courses";
 import MyLearning from "./pages/student/MyLearning";
 import Profile from "./pages/student/Profile";
